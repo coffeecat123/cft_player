@@ -1,0 +1,38 @@
+name: cft_player
+description: "A new Flutter project."
+
+publish_to: 'none'
+
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.13.0
+
+dependencies:
+  flutter:
+    sdk: flutter
+  
+  # 核心解碼引擎 (基於 mpv，效能最強)
+  media_kit: ^1.1.10
+  media_kit_video: ^1.2.4
+  media_kit_libs_video: ^1.0.4 # 自動引入各平台編譯好的 libmpv
+
+  # XML 解析 (彈幕檔)
+  xml: ^6.5.0
+
+  # 本地持久化 (儲存播放紀錄，取代 localStorage)
+  shared_preferences: ^2.2.2
+
+  # 桌面端檔案拖曳支援
+  desktop_drop: ^0.4.4
+
+  # 視窗管理 (置頂、全螢幕)
+  window_manager: ^0.3.8
+  file_picker: ^13.3.0
+  cross_file: ^0.3.5+5
+  flutter_svg: ^2.3.2
+
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/icons/

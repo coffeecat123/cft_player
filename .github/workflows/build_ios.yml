@@ -1,0 +1,44 @@
+name: Build iOS IPA
+
+on:
+  workflow_dispatch: # 允許你在 GitHub 網頁上按一個按鈕就手動觸發打包
+
+jobs:
+  build-ios:
+    runs-on: macos-latest # 💥 使用微軟官方免費提供的最新 Mac 伺服器！
+
+    steps:
+      # 1. 下載你的程式碼
+      - uses: actions/checkout@v4
+
+      # 2. 設定 Java (建置環境所需)
+      - uses: actions/setup-java@v3
+        with:
+          distribution: 'zulu'
+          java-version: '17'
+
+      # 3. 安裝 Flutter 環境
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+          cache: true
+
+      # 4. 下載套件
+      - name: Install dependencies
+        run: flutter pub get
+
+      # 5. 編譯打包成未簽名的 IPA
+      - name: Build IPA
+        run: |
+          flutter build ios --release --no-codesign
+          cd build/ios/iphoneos
+          mkdir Payload
+          cp -r Runner.app Payload/
+          zip -r app-release.ipa Payload
+
+      # 6. 將打包好的 IPA 產出並提供下載
+      - name: Upload IPA Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ios-release-ipa
+          path: build/ios/iphoneos/app-release.ipa
