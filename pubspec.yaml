@@ -11,6 +11,7 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  flutter_launcher_icons: ^0.13.1
   
   # 核心解碼引擎 (基於 mpv，效能最強)
   media_kit: ^1.1.10
@@ -35,3 +36,12 @@ flutter:
   uses-material-design: true
   assets:
     - assets/icons/
+
+flutter_launcher_icons:
+  image_path: "assets/app_icon.png"
+  android: true
+  ios: true
+  windows:
+    generate: true
+    icon_path: "assets/app_icon.png"
+  min_sdk_android: 21
