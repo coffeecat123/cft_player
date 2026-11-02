@@ -1,4 +1,10 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"
+        android:maxSdkVersion="32" />
+    <uses-permission android:name="android.permission.READ_MEDIA_VIDEO" />
+    <uses-permission android:name="android.permission.READ_MEDIA_AUDIO" />
     <application
         android:label="cft_player"
         android:name="${applicationName}"
@@ -20,14 +26,6 @@
                 android:name="io.flutter.embedding.android.NormalTheme"
                 android:resource="@style/NormalTheme"
             />
-            <!-- 網路權限 (讀取網路或伺服器) -->
-            <uses-permission android:name="android.permission.INTERNET" />
-            <!-- 讀取外部儲存空間 (影片/音樂) -->
-            <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"
-                android:maxSdkVersion="32" />
-            <!-- Android 13+ 新版多媒體權限 -->
-            <uses-permission android:name="android.permission.READ_MEDIA_VIDEO" />
-            <uses-permission android:name="android.permission.READ_MEDIA_AUDIO" />
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
