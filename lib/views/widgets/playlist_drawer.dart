@@ -414,6 +414,7 @@ class _PlaylistDrawerState extends State<PlaylistDrawer> {
                                       overflow: TextOverflow.ellipsis,
                                     ),
                                   ),
+                                  const SizedBox(width: 4),
                                   Text(
                                     " (${folder.videos.length})",
                                     style: const TextStyle(
@@ -439,7 +440,6 @@ class _PlaylistDrawerState extends State<PlaylistDrawer> {
                                       folder,
                                     ),
                                   ),
-                                  const SizedBox(width: 12),
                                 ],
                               ),
                             ),

@@ -23,9 +23,8 @@ dependencies:
   # 本地持久化 (儲存播放紀錄，取代 localStorage)
   shared_preferences: ^2.2.2
 
+  desktop_drop: 0.8.0
   # 桌面端檔案拖曳支援
-  desktop_drop: ^0.4.4
-
   # 視窗管理 (置頂、全螢幕)
   window_manager: ^0.3.8
   file_picker: ^13.3.0

@@ -6,6 +6,7 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/scheduler.dart';
+import 'package:flutter/foundation.dart'; 
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:media_kit_video/media_kit_video.dart';
 import 'package:desktop_drop/desktop_drop.dart';
@@ -58,7 +59,16 @@ class _PlayerScreenState extends State<PlayerScreen>
   Duration? dragStartTime;
   Duration? dragTargetTime;
   String skipDisplay = "";
-
+ bool get _isTouchUser {
+    // 1. 如果是 Android 或 iOS 手機，一律強制走「手機觸控手勢」！
+    if (!kIsWeb &&
+        (defaultTargetPlatform == TargetPlatform.android ||
+         defaultTargetPlatform == TargetPlatform.iOS)) {
+      return true;
+    }
+    // 2. 桌面端 (Windows) 只有在真正使用觸控螢幕時才走觸控手勢
+    return _lastPointerKind == PointerDeviceKind.touch;
+  }
   String _formatDuration(Duration d) {
     final h = d.inHours;
     final m = d.inMinutes.remainder(60).toString().padLeft(2, '0');
@@ -374,60 +384,59 @@ class _PlayerScreenState extends State<PlayerScreen>
                           onPointerDown: (e) => _lastPointerKind = e.kind,
                           child: GestureDetector(
                             behavior: HitTestBehavior.translucent,
+                            // 💥 1. 單擊點選：
                             onTap: () {
-                              if (_lastPointerKind == PointerDeviceKind.mouse) {
-                                playerCtrl.player.playOrPause();
-                                resetHideTimer();
-                              } else {
+                              if (_isTouchUser) {
+                                // 📱 手機：單擊只「切換顯示/隱藏控制列」，絕不暫停！
                                 setState(() {
                                   showControls = !showControls;
-                                  if (!showControls)
-                                    isDanmuSettingsOpen = false;
+                                  if (!showControls) isDanmuSettingsOpen = false;
                                 });
-                              }
-                            },
-                            onDoubleTap: () {
-                              if (_lastPointerKind == PointerDeviceKind.touch) {
+                              } else {
+                                // 💻 電腦滑鼠：單擊直接暫停/播放
                                 playerCtrl.player.playOrPause();
+                                resetHideTimer();
                               }
                             },
+                            // 💥 2. 雙擊點選：
+                            onDoubleTap: () {
+                              if (_isTouchUser) {
+                                // 📱 手機：雙擊才是「暫停 / 播放」！
+                                playerCtrl.player.playOrPause();
+                              } else {
+                                // 💻 電腦滑鼠：雙擊快速切換全螢幕
+                                //playerCtrl.toggleFullScreen();
+                              }
+                            },
+                            // 💥 3. 滑動快進：只有觸控手機才允許滑動！
                             onHorizontalDragStart: (details) {
-                              if (_lastPointerKind != PointerDeviceKind.touch)
-                                return;
+                              if (!_isTouchUser) return;
                               dragStartX = details.localPosition.dx;
                               dragStartTime = playerCtrl.player.state.position;
                             },
                             onHorizontalDragUpdate: (details) {
-                              if (_lastPointerKind != PointerDeviceKind.touch)
-                                return;
-                              if (dragStartX == null || dragStartTime == null)
-                                return;
+                              if (!_isTouchUser) return;
+                              if (dragStartX == null || dragStartTime == null) return;
 
-                              final deltaX =
-                                  details.localPosition.dx - dragStartX!;
+                              final deltaX = details.localPosition.dx - dragStartX!;
                               final offsetSec = (deltaX / 10).toInt();
                               final total = playerCtrl.player.state.duration;
 
-                              var target =
-                                  dragStartTime! + Duration(seconds: offsetSec);
-                              if (target < Duration.zero)
-                                target = Duration.zero;
+                              var target = dragStartTime! + Duration(seconds: offsetSec);
+                              if (target < Duration.zero) target = Duration.zero;
                               if (target > total) target = total;
 
                               dragTargetTime = target;
 
                               final sign = offsetSec >= 0 ? '+' : '-';
-                              final absOffset = Duration(
-                                seconds: offsetSec.abs(),
-                              );
+                              final absOffset = Duration(seconds: offsetSec.abs());
                               setState(() {
                                 skipDisplay =
                                     "${_formatDuration(target)} / ${_formatDuration(total)}\n$sign${_formatDuration(absOffset)}";
                               });
                             },
                             onHorizontalDragEnd: (_) {
-                              if (_lastPointerKind != PointerDeviceKind.touch)
-                                return;
+                              if (!_isTouchUser) return;
                               if (dragTargetTime != null) {
                                 playerCtrl.player.seek(dragTargetTime!);
                               }
